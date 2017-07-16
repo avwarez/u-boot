@@ -282,11 +282,6 @@ typedef struct bootm_headers {
 #define CHUNKSZ_SHA1 (64 * 1024)
 #endif
 
-#ifdef BUILD_FROM_LTQ_APPS
-  #define be32_to_cpu(x)		(x)
-  #define cpu_to_be32(x)		(x)
-#endif
-
 #define uimage_to_cpu(x)		be32_to_cpu(x)
 #define cpu_to_uimage(x)		cpu_to_be32(x)
 

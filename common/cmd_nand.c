@@ -7,7 +7,7 @@
  * Added 16-bit nand support
  * (C) 2004 Texas Instruments
  */
-  
+
 #include <common.h>
 #include <linux/mtd/mtd.h>
 #include <command.h>
@@ -381,11 +381,13 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 		printf("\nNAND %s: ", read ? "read" : "write");
 		if (arg_off_size(argc - 3, argv + 3, nand, &off, &size) != 0)
 			return 1;
+
 		s = strchr(cmd, '.');
 		if (!s || !strcmp(s, ".jffs2") ||
 		    !strcmp(s, ".e") || !strcmp(s, ".i")) {
 			if (read)
-				ret = nand_read_skip_bad(nand, off, &size,(u_char *)addr);
+				ret = nand_read_skip_bad(nand, off, &size,
+							 (u_char *)addr);
 			else
 				ret = nand_write_skip_bad(nand, off, &size,
 							  (u_char *)addr);
@@ -401,8 +403,9 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 				.ooblen = size,
 				.mode = MTD_OOB_RAW
 			};
+
 			if (read)
-			    ret = nand->read_oob(nand, off, &ops);
+				ret = nand->read_oob(nand, off, &ops);
 			else
 				ret = nand->write_oob(nand, off, &ops);
 		} else {
@@ -413,7 +416,7 @@ int do_nand(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 		
 		printf(" 0x%llx bytes %s: %s\n", size,
 		       read ? "read" : "written", ret ? "ERROR" : "OK");
-        
+
 		return ret == 0 ? 0 : 1;
 	}
 

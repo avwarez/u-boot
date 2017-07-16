@@ -347,6 +347,7 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	display_flash_config (size);
 	bd->bi_flashsize = size;
 #endif
+
 	bd->bi_flashstart = CONFIG_SYS_FLASH_BASE;
 #if CONFIG_SYS_MONITOR_BASE == CONFIG_SYS_FLASH_BASE
 	bd->bi_flashoffset = monitor_flash_len;	/* reserved area for U-Boot */
@@ -384,13 +385,12 @@ void board_init_r (gd_t *id, ulong dest_addr)
 
 	/* Initialize the console (after the relocation and devices init) */
 	console_init_r ();
-
 /** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** ** **/
+
 	/* Initialize from environment */
 	if ((s = getenv ("loadaddr")) != NULL) {
 		load_addr = simple_strtoul (s, NULL, 16);
 	}
-
 #if defined(CONFIG_CMD_NET)
 	if ((s = getenv ("bootfile")) != NULL) {
 		copy_filename (BootFile, s, sizeof (BootFile));

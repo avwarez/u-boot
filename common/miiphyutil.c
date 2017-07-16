@@ -121,7 +121,6 @@ void miiphy_register (char *name,
 		current_mii = new_dev;
 }
 
-#if defined(CONFIG_CMD_MII)
 int miiphy_set_current_dev (char *devname)
 {
 	struct list_head *entry;
@@ -147,7 +146,6 @@ char *miiphy_get_current_dev ()
 
 	return NULL;
 }
-#endif
 
 /*****************************************************************************
  *
@@ -223,7 +221,6 @@ int miiphy_write (char *devname, unsigned char addr, unsigned char reg,
 	return ((found_dev) ? write_ret : 1);
 }
 
-#if defined(CONFIG_CMD_MII)
 /*****************************************************************************
  *
  * Print out list of registered MII capable devices.
@@ -330,7 +327,6 @@ int miiphy_reset (char *devname, unsigned char addr)
 	}
 	return (0);
 }
-#endif
 
 /*****************************************************************************
  *

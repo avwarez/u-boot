@@ -419,7 +419,7 @@ static int bootm_load_os(image_info_t os, ulong *load_end, int boot_progress)
 		*load_end = load + unc_len;
 		break;
 #endif /* CONFIG_LZO */
-     default:
+	default:
 		printf ("Unimplemented compression type %d\n", comp);
 		return BOOTM_ERR_UNIMPLEMENTED;
 	}
@@ -599,6 +599,7 @@ unsigned int get_kernel_len()
 /*******************************************************************/
 /* bootm - boot application image from image in memory */
 /*******************************************************************/
+
 int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 {
 	ulong		iflag;
@@ -628,15 +629,6 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	images.rd_start = 0;
 	images.rd_end = 0;
 
-
-	
-#ifdef DEBUG
-	printf("%x, %x, %x, %x\n%x\n %d, %d, %d\n", images.os.start, images.os.end, 
-		images.os.image_start, images.os.image_len, 
-		images.os.load, 
-		images.os.comp, images.os.type, images.os.os);
-#endif
-
 	/*
 	 * We have reached the point of no return: we are going to
 	 * overwrite all exception vector code, so we cannot easily
@@ -644,6 +636,18 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	 */
 	iflag = disable_interrupts();
 
+#if defined(CONFIG_CMD_USB)
+	/*
+	 * turn off USB to prevent the host controller from writing to the
+	 * SDRAM while Linux is booting. This could happen (at least for OHCI
+	 * controller), because the HCCA (Host Controller Communication Area)
+	 * lies within the SDRAM and the host controller writes continously to
+	 * this area (as busmaster!). The HccaFrameNumber is for example
+	 * updated every 1 ms within the HCCA structure in SDRAM! For more
+	 * details see the OpenHCI specification.
+	 */
+	usb_stop();
+#endif
 
 #ifdef CONFIG_AMIGAONEG3SE
 	/*
@@ -656,10 +660,6 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 
 	printf ("	Uncompressing ... ");
 
-#ifdef DEBUG	
-	printf("start %x, %x, %x, %x\n", images.os.load, unc_len,
-		images.os.image_start, images.os.image_len);
-#endif
 
 	ret = lzmaBuffToBuffDecompress(
 		(unsigned char *)images.os.load, &unc_len,
@@ -673,13 +673,6 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	}
 	
 	load_end = images.os.load + unc_len;
-
-#ifdef DEBUG	
-	printf("after %x, %x, %x, %x\n", images.os.load, unc_len,
-		images.os.image_start, images.os.image_len);
-
-	printf("   kernel loaded at 0x%08lx, end = 0x%08lx\n", images.os.load, load_end);
-#endif
 
 	if (ret < 0) {
 		if (ret == BOOTM_ERR_RESET)
@@ -720,13 +713,8 @@ int do_bootm (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	if (images.os.os == IH_OS_LINUX)
 		fixup_silent_linux();
 #endif
+
 	boot_fn = do_bootm_linux;
-
-#ifdef DEBUG
-	printf("os is %d, fun is %x, %x\n", images.os.os, 
-		(void *)boot_fn, (void *)do_bootm_linux);
-#endif
-
 
 	if (boot_fn == NULL) {
 		if (iflag)

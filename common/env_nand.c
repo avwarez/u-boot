@@ -370,10 +370,11 @@ void env_relocate_spec (void)
 {
 #if !defined(ENV_IS_EMBEDDED)
 	int ret;
+
 	ret = readenv(CONFIG_ENV_OFFSET, (u_char *) env_ptr);
 	if (ret)
 		return use_default();
-	
+
 	if (crc32(0, env_ptr->data, ENV_SIZE) != env_ptr->crc)
 		return use_default();
 #endif /* ! ENV_IS_EMBEDDED */

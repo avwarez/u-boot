@@ -131,9 +131,7 @@ typedef		__s64		int64_t;
 #endif
 
 typedef __u16 __bitwise __le16;
-#ifndef BUILD_FROM_LTQ_APPS
-  typedef __u16 __bitwise __be16;
-#endif
+typedef __u16 __bitwise __be16;
 typedef __u32 __bitwise __le32;
 typedef __u32 __bitwise __be32;
 #if defined(__GNUC__)
